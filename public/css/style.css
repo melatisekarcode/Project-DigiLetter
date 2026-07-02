@@ -1,0 +1,126 @@
+/* PALETTE DIGI LATTER (clean + bootstrap-friendly) */
+:root {
+    --digi-primary: #0d6efd;       /* match Bootstrap primary */
+    --digi-dark: #0f172a;
+    --bg-light-smooth: #f8fafc;
+    --text-dark-smooth: #334155;
+}
+
+/* GLOBAL CONFIG */
+body {
+    font-family: var(--bs-font-sans-serif);
+    color: var(--text-dark-smooth);
+    background-color: var(--bg-light-smooth);
+}
+
+.text-dark-smooth { color: var(--digi-dark); }
+.extra-small { font-size: 0.8rem; }
+
+/* BRANDING & BUTTONS */
+.bg-brand { background-color: var(--digi-primary) !important; }
+.text-brand { color: var(--digi-primary) !important; }
+
+.btn-brand {
+    background-color: var(--digi-primary) !important;
+    border-color: var(--digi-primary) !important;
+    color: #fff !important;
+}
+.btn-brand:hover {
+    background-color: #0b5ed7 !important;
+    border-color: #0b5ed7 !important;
+}
+.btn-brand:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* LOGIN VIEW STYLE */
+.login-body {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+}
+
+.login-card {
+    max-width: 850px;
+}
+
+/* Sesuaikan logo dengan kotak branding kiri */
+.login-logo {
+    width: auto;
+    max-width: 140px;
+    height: auto;
+    display: block;
+    margin-bottom: 0.75rem;
+    margin-top: -2px; /* naik kecil agar tidak memotong */
+    object-fit: contain;
+}
+
+
+
+
+
+/* DASHBOARD SIDEBAR STYLE */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--digi-dark);
+}
+
+.sidebar .nav-link {
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    border-radius: 0.75rem;
+}
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #fff !important;
+}
+.sidebar .nav-link.active {
+    background-color: var(--digi-primary) !important;
+    color: #fff !important;
+}
+
+/* TOP NAV & AVATAR */
+.style-content-wrapper {
+    overflow-x: hidden;
+}
+
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* STATS CARDS */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+}
+
+/* CUSTOM TABLE */
+.custom-table {
+    --bs-table-bg: transparent;
+}
+
+.custom-table thead th {
+    background-color: #f1f5f9;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.custom-table tbody td {
+    border-bottom-color: #e2e8f0;
+    padding: 1rem;
+}
+
