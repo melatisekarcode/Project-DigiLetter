@@ -26,6 +26,14 @@
                     <h3 class="fw-bold text-dark-smooth">Welcome to Digi Letter</h3>
                     <p class="text-muted small">Silakan masuk untuk mengajukan atau menyetujui dokumen surat.</p>
                 </div>
+
+                <?php if (session()->getFlashdata('error')): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= session()->getFlashdata('error') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
                 <form action="<?= base_url('login') ?>" method="POST">
                     
                     <div class="mb-3">
@@ -33,8 +41,7 @@
 
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-card-list"></i></span>
-                            <input type="text" name="email" class="form-control bg-light border-start-0" value="" placeholder="Masukkan Email/NPM" required>
-
+                            <input type="text" name="email" class="form-control bg-light border-start-0" value="" placeholder="Masukkan Email" required>
 
                         </div>
                     </div>

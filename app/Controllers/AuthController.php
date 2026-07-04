@@ -26,14 +26,20 @@ class AuthController extends BaseController
         // Gunakan lower() di SQL jika ingin pencarian lebih aman dari perbedaan huruf kapital
         $user = $model->where('email', $email)->first();
 
+        if (!$user || !password_verify($password, $user['password'])) {
+            return redirect()->back()
+            ->with('error', 'Email atau password salah');
+        }
         // Jika user tidak ditemukan
         if (!$user) {
-            return view('login');
+        return redirect()->back()
+        ->with('error', 'Email tidak ditemukan');
         }
 
         // Verifikasi password
         if (!password_verify($password, $user['password'])) {
-            return view('login');
+            return redirect()->back()
+            ->with('error', 'Password salah');
         }
 
         // --- BERHASIL LOGIN ---
@@ -42,11 +48,13 @@ class AuthController extends BaseController
         $session->set([
             'id_user'   => $user['id_user'],
             'nama'      => $user['nama'],
+            'email' => $user['email'],
             'role'      => $user['role'],
             'isLoggedIn'=> true
         ]);
 
-        // 2. Redirect ke route dashboard (Hilangkan .html, arahkan ke URL/Route controller)
+        // 2. Redirect ke route dashboard 
         return redirect()->to(base_url('dashboard')); 
+        $routes->get('/dashboard', 'DashboardController::index');
     }
 }
