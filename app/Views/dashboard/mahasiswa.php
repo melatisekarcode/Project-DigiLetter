@@ -89,7 +89,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
                                     <p class="text-muted small fw-medium mb-1">Total Ajuan Surat</p>
-                                    <h3 class="fw-bold mb-0 text-dark-smooth">0</h3>
+                                     <h3 class="fw-bold mb-0 text-dark-smooth"><?= esc($statistik['total'] ?? 0) ?></h3>
                                 </div>
                                 <div class="stat-icon bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-folder2-open fs-4"></i>
@@ -103,7 +103,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
                                     <p class="text-muted small fw-medium mb-1">Menunggu Review</p>
-                                    <h3 class="fw-bold mb-0 text-dark-smooth">0</h3>
+                                    <h3 class="fw-bold mb-0 text-dark-smooth"><?= esc($statistik['menunggu'] ?? 0) ?></h3>
                                 </div>
                                 <div class="stat-icon bg-warning-subtle text-warning rounded-3 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-hourglass-split fs-4"></i>
@@ -117,7 +117,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
                                     <p class="text-muted small fw-medium mb-1">Telah Disetujui (TTD)</p>
-                                    <h3 class="fw-bold mb-0 text-dark-smooth">0</h3>
+                                     <h3 class="fw-bold mb-0 text-dark-smooth"><?= esc($statistik['disetujui'] ?? 0) ?></h3>
                                 </div>
                                 <div class="stat-icon bg-success-subtle text-success rounded-3 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-pen-fill fs-4"></i>
@@ -131,7 +131,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
                                     <p class="text-muted small fw-medium mb-1">Ditolak / Revisi</p>
-                                    <h3 class="fw-bold mb-0 text-dark-smooth">0</h3>
+                                     <h3 class="fw-bold mb-0 text-dark-smooth"><?= esc($statistik['ditolak'] ?? 0) ?></h3>
                                 </div>
                                 <div class="stat-icon bg-danger-subtle text-danger rounded-3 d-flex align-items-center justify-content-center">
                                     <i class="bi bi-file-earmark-x fs-4"></i>
@@ -163,46 +163,42 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><span class="fw-bold text-dark-smooth">Pengajuan Surat</span></td>
-                                    <td>
-                                        <div class="small fw-semibold">Yanto Hermawan S.T, M.Kom.</div>
-                                        <div class="extra-small text-muted">Dosen Pembimbing 1</div>
-                                    </td>
-                                    <td class="small text-muted">25 Juni 2026</td>
-                                    <td><span class="small text-muted">Riset Judul Proposal Skripsi</span></td>
-                                    <td><span class="badge bg-warning-subtle text-warning px-2.5 py-1.5 rounded-pill small"><i class="bi bi-clock me-1"></i> Proses Review</span></td>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-light border px-2 py-1 rounded-3 small text-muted" disabled><i class="bi bi-download"></i> Unduh</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="fw-bold text-dark-smooth">Perizinan Surat</span></td>
-                                    <td>
-                                        <div class="small fw-semibold">Dr. Robert Doney</div>
-                                        <div class="extra-small text-muted">Ketua Program Studi</div>
-                                    </td>
-                                    <td class="small text-muted">20 Juni 2026</td>
-                                    <td><span class="small text-muted">Penyelanggaran program kerja himpunan mahasiswa SI</span></td>
-                                    <td><span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill small"><i class="bi bi-check-circle-fill me-1"></i> Terverifikasi TTD</span></td>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-outline-primary px-2 py-1 rounded-3 small"><i class="bi bi-download"></i> Unduh PDF</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="fw-bold text-dark-smooth">Peminjaman</span></td>
-                                    <td>
-                                        <div class="small fw-semibold">Dr. Robert Doney</div>
-                                        <div class="extra-small text-muted">Ketua Bagian Peminjaman barang kampus</div>
-                                    </td>
-                                    <td class="small text-muted">15 Juni 2026</td>
-                                    <td><span class="small text-muted">Peminjaman barang untuk Proker UKM</span></td>
-                                    <td><span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill small"><i class="bi bi-exclamation-triangle-fill me-1"></i> Ditolak (Revisi)</span></td>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-light border px-2 py-1 rounded-3 small text-dark"><i class="bi bi-pencil-square"></i> Perbaiki</button>
-                                    </td>
-                                </tr>
-                            </tbody>
+    <?php if (empty($riwayat_surat)): ?>
+    <tr>
+        <td colspan="6" class="text-center text-muted py-4">Belum ada ajuan surat.</td>
+    </tr>
+    <?php else: ?>
+    <?php foreach ($riwayat_surat as $row): ?>
+    <tr>
+        <td><span class="fw-bold text-dark-smooth"><?= esc($row['nama_jenis']) ?></span></td>
+        <td>
+            <div class="small fw-semibold"><?= esc($row['nama_dosen'] ?? '-') ?></div>
+            <div class="extra-small text-muted"><?= esc($row['tujuan_surat']) ?></div>
+        </td>
+        <td class="small text-muted"><?= date('d M Y', strtotime($row['tanggal_pengajuan'])) ?></td>
+        <td><span class="small text-muted"><?= esc($row['tujuan_surat']) ?></span></td>
+        <td>
+            <?php if (in_array($row['status'], ['diajukan', 'diproses'])): ?>
+                <span class="badge bg-warning-subtle text-warning px-2.5 py-1.5 rounded-pill small"><i class="bi bi-clock me-1"></i> Proses Review</span>
+            <?php elseif (in_array($row['status'], ['ditandatangani', 'disampaikan'])): ?>
+                <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill small"><i class="bi bi-check-circle-fill me-1"></i> Terverifikasi TTD</span>
+            <?php else: ?>
+                <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill small"><i class="bi bi-exclamation-triangle-fill me-1"></i> Ditolak (Revisi)</span>
+            <?php endif; ?>
+        </td>
+        <td class="text-center">
+            <?php if (in_array($row['status'], ['ditandatangani', 'disampaikan']) && $row['file_surat']): ?>
+                <a href="<?= base_url('writable/uploads/surat/' . $row['file_surat']) ?>" target="_blank" class="btn btn-sm btn-outline-primary px-2 py-1 rounded-3 small"><i class="bi bi-download"></i> Unduh PDF</a>
+            <?php elseif ($row['status'] === 'ditolak'): ?>
+                <button class="btn btn-sm btn-light border px-2 py-1 rounded-3 small text-dark"><i class="bi bi-pencil-square"></i> Perbaiki</button>
+            <?php else: ?>
+                <button class="btn btn-sm btn-light border px-2 py-1 rounded-3 small text-muted" disabled><i class="bi bi-download"></i> Unduh</button>
+            <?php endif; ?>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+    <?php endif; ?>
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -251,7 +247,7 @@
                 <div class="row g-4">
                     <div class="col-12 col-xl-8">
                         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                            <form id="form-pengajuan" class="row g-3" enctype="multipart/form-data">
+                            <form id="form-pengajuan" class="row g-3" action="<?= site_url('mahasiswa/simpan') ?>" method="post" enctype="multipart/form-data">
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Jenis Surat</label>
                                     <select id="select-jenis-surat" class="form-select rounded-3" onchange="clearFieldError(this, 'jenis-error-msg')">
@@ -269,7 +265,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Perihal / Keperluan</label>
-                                    <input type="text" class="form-control rounded-3" placeholder="Contoh: Pengajuan Izin Penelitian Skripsi">
+                                    <input type="text" name="tujuan_surat" class="form-control rounded-3" placeholder="Contoh: Pengajuan Izin Penelitian Skripsi">
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Dosen Penandatangan / Penanggung Jawab</label>
@@ -297,7 +293,7 @@
                                 </div>
                                 <div class="col-12 d-flex gap-2 justify-content-end pt-2">
                                     <button type="button" class="btn btn-light border rounded-3 px-4">Simpan Draft</button>
-                                    <button type="button" class="btn btn-brand text-white rounded-3 px-4" onclick="kirimAjuan()">Kirim Ajuan</button>
+                                    <button type="submit" class="btn btn-brand text-white rounded-3 px-4" onclick="return kirimAjuan()">Kirim Ajuan</button>
                                 </div>
                             </form>
                         </div>
