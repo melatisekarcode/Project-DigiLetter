@@ -251,10 +251,10 @@
                 <div class="row g-4">
                     <div class="col-12 col-xl-8">
                         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                            <form class="row g-3">
+                            <form id="form-pengajuan" class="row g-3" enctype="multipart/form-data">
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Jenis Surat</label>
-                                    <select class="form-select rounded-3">
+                                    <select id="select-jenis-surat" class="form-select rounded-3" onchange="clearFieldError(this, 'jenis-error-msg')">
                                          <option value="">Pilih Jenis Surat</option>
                                         <?php foreach ($jenis_surat as $js): ?>
                                         <option value="<?= $js['id_jenis']; ?>">
@@ -262,6 +262,10 @@
                                         </option>
                                     <?php endforeach; ?>
                                     </select>
+                                    <div id="jenis-error-msg" class="text-danger small mt-1 d-none">
+                                        <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                        Silakan pilih jenis surat terlebih dahulu.
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Perihal / Keperluan</label>
@@ -269,7 +273,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Dosen Penandatangan / Penanggung Jawab</label>
-                                    <select class="form-select rounded-3" name="id_dosen">
+                                    <select id="select-dosen" class="form-select rounded-3" name="id_dosen" onchange="clearFieldError(this, 'dosen-error-msg')">
 
                                     <option value="">Pilih Dosen</option>
 
@@ -282,6 +286,10 @@
                                     <?php endforeach; ?>
 
                                 </select>
+                                    <div id="dosen-error-msg" class="text-danger small mt-1 d-none">
+                                        <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                        Silakan pilih dosen penanggung jawab terlebih dahulu.
+                                    </div>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Isi Ringkas / Keterangan Tambahan</label>
@@ -289,7 +297,7 @@
                                 </div>
                                 <div class="col-12 d-flex gap-2 justify-content-end pt-2">
                                     <button type="button" class="btn btn-light border rounded-3 px-4">Simpan Draft</button>
-                                    <button type="button" class="btn btn-brand text-white rounded-3 px-4">Kirim Ajuan</button>
+                                    <button type="button" class="btn btn-brand text-white rounded-3 px-4" onclick="kirimAjuan()">Kirim Ajuan</button>
                                 </div>
                             </form>
                         </div>
@@ -298,11 +306,29 @@
                     <div class="col-12 col-xl-4">
                         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 20px;">
                             <h6 class="fw-bold text-dark-smooth mb-3">Pratinjau Dokumen</h6>
-                            <div class="border rounded-3 p-4 bg-light shadow-inner text-center text-muted" style="min-height: 250px; display: flex; flex-column: column; justify-content: center; align-items: center;">
+
+                            <input
+                                type="file"
+                                id="input-file-pdf"
+                                name="file_surat"
+                                accept="application/pdf"
+                                class="d-none"
+                                onchange="handleFilePreview(this)">
+
+                            <div id="preview-dokumen"
+                                 class="border rounded-3 p-4 bg-light shadow-inner text-center text-muted"
+                                 style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;"
+                                 onclick="document.getElementById('input-file-pdf').click()">
                                 <div>
-                                    <i class="bi bi-file-earmark-pdf fs-1 text-secondary mb-2"></i>
-                                    <p class="small mb-0">Draft berkas otomatis terbentuk setelah form diisi.</p>
+                                    <i class="bi bi-cloud-arrow-up fs-1 text-secondary mb-2"></i>
+                                    <p class="small fw-bold text-dark-smooth mb-1">Klik untuk unggah file PDF</p>
+                                    <p class="extra-small mb-0">Draft berkas otomatis terbentuk setelah form diisi.</p>
                                 </div>
+                            </div>
+
+                            <div id="pdf-error-msg" class="text-danger small mt-2 d-none">
+                                <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                Anda belum memasukkan file PDF. Silakan unggah file terlebih dahulu sebelum mengirim ajuan.
                             </div>
                         </div>
                     </div>
@@ -378,6 +404,110 @@
                 </tr>
             `;
         });
+    }
+
+    // ===== LOGIKA PRATINJAU & VALIDASI UPLOAD PDF SEBELUM KIRIM AJUAN =====
+
+    // Menampilkan isi PDF langsung (embed) di kotak Pratinjau Dokumen saat file dipilih,
+    // dan langsung menghapus tanda error jika sebelumnya muncul.
+    function handleFilePreview(inputEl) {
+        const preview = document.getElementById('preview-dokumen');
+        const errorMsg = document.getElementById('pdf-error-msg');
+        const file = inputEl.files[0];
+
+        if (file) {
+            inputEl.classList.remove('is-invalid');
+            errorMsg.classList.add('d-none');
+
+            // Buat URL sementara dari file PDF lalu tampilkan langsung isinya di kotak Pratinjau Dokumen
+            const fileUrl = URL.createObjectURL(file);
+
+            preview.style.cursor = 'default';
+            preview.style.display = 'block';
+            preview.style.padding = '0';
+            preview.innerHTML = `
+                <div class="p-2 border-bottom bg-white d-flex align-items-center justify-content-between">
+                    <span class="small fw-bold text-dark-smooth text-truncate"><i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i>${file.name}</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="event.stopPropagation(); document.getElementById('input-file-pdf').click();">Ganti</button>
+                </div>
+                <embed src="${fileUrl}" type="application/pdf" width="100%" height="400px" />
+            `;
+        }
+    }
+
+    // Menghapus tanda error pada select begitu user memilih sebuah opsi
+    function clearFieldError(selectEl, errorMsgId) {
+        if (selectEl.value) {
+            selectEl.classList.remove('is-invalid');
+            document.getElementById(errorMsgId).classList.add('d-none');
+        }
+    }
+
+    // Dipanggil saat tombol "Kirim Ajuan" ditekan.
+    // Mengecek jenis surat, dosen, dan file PDF sebelum ajuan boleh dikirim.
+    function kirimAjuan() {
+        const jenisSelect = document.getElementById('select-jenis-surat');
+        const jenisError = document.getElementById('jenis-error-msg');
+        const dosenSelect = document.getElementById('select-dosen');
+        const dosenError = document.getElementById('dosen-error-msg');
+        const fileInput = document.getElementById('input-file-pdf');
+        const fileErrorMsg = document.getElementById('pdf-error-msg');
+
+        let isValid = true;
+        let firstInvalidEl = null;
+
+        // Reset semua tanda error dulu
+        jenisSelect.classList.remove('is-invalid');
+        jenisError.classList.add('d-none');
+        dosenSelect.classList.remove('is-invalid');
+        dosenError.classList.add('d-none');
+        fileInput.classList.remove('is-invalid');
+        fileErrorMsg.classList.add('d-none');
+
+        // 1. Validasi Jenis Surat
+        if (!jenisSelect.value) {
+            jenisSelect.classList.add('is-invalid');
+            jenisError.classList.remove('d-none');
+            isValid = false;
+            firstInvalidEl = firstInvalidEl || jenisSelect;
+        }
+
+        // 2. Validasi Dosen Penandatangan
+        if (!dosenSelect.value) {
+            dosenSelect.classList.add('is-invalid');
+            dosenError.classList.remove('d-none');
+            isValid = false;
+            firstInvalidEl = firstInvalidEl || dosenSelect;
+        }
+
+        // 3. Validasi File PDF
+        if (!fileInput.files || fileInput.files.length === 0) {
+            fileInput.classList.add('is-invalid');
+            fileErrorMsg.classList.remove('d-none');
+            isValid = false;
+            firstInvalidEl = firstInvalidEl || document.getElementById('preview-dokumen');
+        } else {
+            const file = fileInput.files[0];
+            if (file.type !== 'application/pdf') {
+                fileInput.classList.add('is-invalid');
+                fileErrorMsg.classList.remove('d-none');
+                fileErrorMsg.innerHTML = '<i class="bi bi-exclamation-circle-fill me-1"></i> File yang diunggah harus berformat PDF.';
+                isValid = false;
+                firstInvalidEl = firstInvalidEl || document.getElementById('preview-dokumen');
+            }
+        }
+
+        if (!isValid) {
+            if (firstInvalidEl) {
+                firstInvalidEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (typeof firstInvalidEl.focus === 'function') firstInvalidEl.focus();
+            }
+            return false; // batalkan proses kirim
+        }
+
+        // Semua valid -> lanjutkan proses kirim ajuan (submit form / AJAX ke server)
+        // TODO: ganti bagian ini dengan submit form/AJAX sesuai backend Anda
+        document.getElementById('form-pengajuan').submit();
     }
 
     // Default load saat dashboard pertama kali diakses

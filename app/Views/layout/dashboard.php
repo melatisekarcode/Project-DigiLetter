@@ -385,7 +385,51 @@
             `;
         });
     }
+ function handleFilePreview(inputEl) {
+        const preview = document.getElementById('preview-dokumen');
+        const errorMsg = document.getElementById('pdf-error-msg');
+        const file = inputEl.files[0];
 
+        if (file) {
+            inputEl.classList.remove('is-invalid');
+            errorMsg.classList.add('d-none');
+
+            preview.innerHTML = `
+                <div>
+                    <i class="bi bi-file-earmark-pdf-fill fs-1 text-danger mb-2"></i>
+                    <p class="small fw-bold text-dark-smooth mb-1">${file.name}</p>
+                    <p class="extra-small text-muted mb-0">${(file.size / 1024).toFixed(1)} KB</p>
+                </div>
+            `;
+        }
+    }
+
+    function kirimAjuan() {
+        const fileInput = document.getElementById('input-file-pdf');
+        const errorMsg = document.getElementById('pdf-error-msg');
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+            fileInput.classList.add('is-invalid');
+            errorMsg.classList.remove('d-none');
+            fileInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            fileInput.focus();
+            return false;
+        }
+
+        const file = fileInput.files[0];
+        if (file.type !== 'application/pdf') {
+            fileInput.classList.add('is-invalid');
+            errorMsg.classList.remove('d-none');
+            errorMsg.innerHTML = '<i class="bi bi-exclamation-circle-fill me-1"></i> File yang diunggah harus berformat PDF.';
+            return false;
+        }
+
+        fileInput.classList.remove('is-invalid');
+        errorMsg.classList.add('d-none');
+
+        // TODO: ganti dengan submit form/AJAX ke controller Anda
+        document.getElementById('form-pengajuan').submit();
+    }
     // Default load saat dashboard pertama kali diakses
     switchTab('dashboard-utama');
 </script>
