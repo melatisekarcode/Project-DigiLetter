@@ -18,7 +18,9 @@ $routes->get('logout', 'Home::logout');
 $routes->post('login', 'AuthController::login');
 
 // Halaman Dashboard setelah sukses login
-$routes->get('dashboard', 'Home::dashboard');
+$routes->get('dashboard/admin', 'Dashboard::admin');
+$routes->get('dashboard/dosen', 'Dashboard::dosen');
+$routes->get('dashboard/mahasiswa', 'Dashboard::mahasiswa');
 
 // Proses Logout
 $routes->get('logout', 'Home::logout');

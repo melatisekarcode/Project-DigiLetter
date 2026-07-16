@@ -15,5 +15,10 @@ class UserModel extends Model
 
     protected $useSoftDeletes = false;
     protected $allowedFields = ['nama', 'email', 'password', 'role', 'created_at'];
+
+    public function getDosen()
+    {
+        return $this->where('role', 'dosen')->findAll();
+    }
 }
 

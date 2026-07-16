@@ -53,8 +53,13 @@ class AuthController extends BaseController
             'isLoggedIn'=> true
         ]);
 
-        // 2. Redirect ke route dashboard 
-        return redirect()->to(base_url('dashboard')); 
-        $routes->get('/dashboard', 'DashboardController::index');
+        if ($user['role'] === 'admin') {
+            return redirect()->to('/dashboard/admin');
+        }
+        if ($user['role'] === 'dosen') {
+            return redirect()->to('/dashboard/dosen');
+        }
+
+        return redirect()->to('/dashboard/mahasiswa');
+        }
     }
-}

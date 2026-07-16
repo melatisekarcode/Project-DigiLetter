@@ -19,10 +19,6 @@ class CreateJenisSuratTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
             ],
-            'deskripsi' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
         ]);
 
         $this->forge->addKey('id_jenis', true);

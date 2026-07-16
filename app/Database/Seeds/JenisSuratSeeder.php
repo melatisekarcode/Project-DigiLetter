@@ -10,20 +10,16 @@ class JenisSuratSeeder extends Seeder
     {
         $data = [
             [
-                'nama_jenis' => 'Surat Keterangan Aktif Kuliah',
-                'deskripsi'  => 'Surat untuk menerangkan bahwa mahasiswa masih aktif kuliah pada semester berjalan.',
+                'nama_jenis' => 'Perizinan',
             ],
             [
-                'nama_jenis' => 'Surat Pengantar Magang / PKL',
-                'deskripsi'  => 'Surat pengantar resmi dari kampus untuk mengajukan magang di instansi/perusahaan.',
+                'nama_jenis' => 'Pengajuan',
             ],
             [
-                'nama_jenis' => 'Surat Izin Penelitian Skripsi',
-                'deskripsi'  => 'Surat izin pengambilan data objek penelitian untuk keperluan skripsi/tugas akhir.',
+                'nama_jenis' => 'Undangan',
             ],
              [
-                'nama_jenis' => 'Surat Izin Program Kerja Sama UKM',
-                'deskripsi'  => 'Surat izin untuk program kerja sama dengan unit kegiatan mahasiswa.',
+                'nama_jenis' => 'Peminjaman',
             ],
         ];
 
