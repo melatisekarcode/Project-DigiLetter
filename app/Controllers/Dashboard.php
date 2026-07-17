@@ -42,7 +42,7 @@ class Dashboard extends BaseController
         ];
 
         // Mapping yang dipakai di view: menunggu, disetujui, ditolak
-        $data['statistik']['menunggu'] = $data['statistik']['proses'];
+        $data['statistik']['menunggu'] = $data['statistik']['diproses'];
 
         return view('dashboard/mahasiswa', $data);
     }
