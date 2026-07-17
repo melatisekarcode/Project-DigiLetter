@@ -32,6 +32,7 @@
                 </button>
             </li>
             <li class="nav-item">
+                <!-- Diarahkan langsung ke ID konten surat-keluar -->
                 <button onclick="switchTab('surat-keluar')" id="btn-surat-keluar" class="nav-link nav-btn w-100 border-0 bg-transparent text-start rounded-3 text-white-50 d-flex align-items-center gap-3">
                     <i class="bi bi-send"></i> Surat Keluar
                 </button>
@@ -57,7 +58,6 @@
         </div>
     </aside>
 
-    <!-- CONTENT WRAPPER -->
     <div class="flex-grow-1 d-flex flex-column style-content-wrapper">
         <!-- NAVBAR -->
         <nav class="navbar navbar-expand-lg navbar-white bg-white shadow-sm border-bottom px-4 py-3">
@@ -82,12 +82,11 @@
             </div>
         </nav>
 
-        <!-- MAIN MAIN -->
+        <!-- MAIN CONTENT -->
         <main class="p-4 flex-grow-1">
 
             <!-- TAB 1: DASHBOARD UTAMA -->
             <div id="content-dashboard-utama" class="tab-content">
-                <!-- Flash Message Success/Error -->
                 <?php if (session()->getFlashdata('success')) : ?>
                     <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
                         <i class="bi bi-check-circle-fill me-2"></i> <?= session()->getFlashdata('success') ?>
@@ -153,7 +152,7 @@
                     </div>
                 </div>
 
-                <!-- TABLE SURAT KELUAR DI DASHBOARD -->
+                <!-- TABLE PREVIEW UTAMA -->
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mt-4">
                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
                         <div>
@@ -193,12 +192,11 @@
                                         <?php elseif (in_array($row['status'], ['ditandatangani', 'disampaikan'])): ?>
                                             <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill small"><i class="bi bi-check-circle-fill me-1"></i> Terverifikasi TTD</span>
                                         <?php else: ?>
-                                            <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill small"><i class="bi bi-exclamation-triangle-fill me-1"></i> Ditolak (Revisi)</span>
+                                            <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill small"><i class="bi bi-exclamation-triangle-fill me-1"></i> Ditolak</span>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
                                         <?php if (in_array($row['status'], ['ditandatangani', 'disampaikan']) && $row['file_surat']): ?>
-                                            <!-- UPDATE: Menggunakan Rute Aman CI4 untuk download berkas -->
                                             <a href="<?= site_url('dokumen/lihat/' . $row['file_surat']) ?>" target="_blank" class="btn btn-sm btn-outline-primary px-2 py-1 rounded-3 small"><i class="bi bi-download"></i> Unduh PDF</a>
                                         <?php elseif ($row['status'] === 'ditolak'): ?>
                                             <button class="btn btn-sm btn-light border px-2 py-1 rounded-3 small text-dark"><i class="bi bi-pencil-square"></i> Perbaiki</button>
@@ -215,24 +213,62 @@
                 </div>
             </div>
 
-            <!-- TAB 2: SURAT MASUK (CONTAINER DUMMY) -->
-            <div id="content-surat-list" class="tab-content d-none">
+            <!-- UPDATE TAB 2: SEKARANG MEMBACA DARI TABEL PENGAJUAN SURAT (SURAT KELUAR RIIL) -->
+            <div id="content-surat-keluar" class="tab-content d-none">
                 <div class="mb-4">
-                    <h4 id="page-title" class="fw-bold text-dark-smooth">Surat Masuk</h4>
-                    <p class="text-muted small">Kelola data arsip surat berkas digital Anda.</p>
+                    <h4 class="fw-bold text-dark-smooth">Surat Keluar</h4>
+                    <p class="text-muted small">Kelola dan lihat daftar seluruh berkas ajuan keluar resmi Anda.</p>
                 </div>
+
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
                     <div class="table-responsive">
-                        <table class="table align-middle">
+                        <table class="table align-middle custom-table">
                             <thead>
-                                <tr class="text-muted small">
-                                    <th style="width: 50px;">#</th>
-                                    <th>Pengirim / Perihal</th>
+                                <tr>
+                                    <th>Jenis Surat</th>
+                                    <th>Keperluan / Perihal Berkas</th>
+                                    <th>Tanggal Ajuan</th>
+                                    <th>Keterangan Alur</th>
                                     <th>Status Dokumen</th>
-                                    <th>Waktu Terbit</th>
+                                    <th class="text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-body-surat"></tbody>
+                            <tbody>
+                                <?php if (empty($riwayat_surat)): ?>
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Belum ada rekaman arsip surat keluar.</td>
+                                </tr>
+                                <?php else: ?>
+                                <?php foreach ($riwayat_surat as $row): ?>
+                                <tr>
+                                    <td><span class="fw-bold text-dark-smooth"><?= esc($row['nama_jenis']) ?></span></td>
+                                    <td><span class="small text-muted"><?= esc($row['tujuan_surat']) ?></span></td>
+                                    <td class="small text-muted"><?= date('d M Y - H:i', strtotime($row['tanggal_pengajuan'])) ?></td>
+                                    <td><span class="small text-muted"><?= esc($row['keterangan'] ?? '-') ?></span></td>
+                                    <td>
+                                        <?php if ($row['status'] === 'diajukan'): ?>
+                                            <span class="badge bg-secondary-subtle text-secondary px-2.5 py-1.5 rounded-pill small">Diajukan</span>
+                                        <?php elseif ($row['status'] === 'diproses'): ?>
+                                            <span class="badge bg-warning-subtle text-warning px-2.5 py-1.5 rounded-pill small">Sedang Direview</span>
+                                        <?php elseif (in_array($row['status'], ['ditandatangani', 'disampaikan'])): ?>
+                                            <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill small">Selesai (TTD)</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill small">Ditolak</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if (in_array($row['status'], ['ditandatangani', 'disampaikan']) && $row['file_surat']): ?>
+                                            <a href="<?= site_url('dokumen/lihat/' . $row['file_surat']) ?>" target="_blank" class="btn btn-sm btn-primary px-3 py-1 rounded-3 small"><i class="bi bi-eye"></i> Lihat Berkas</a>
+                                        <?php elseif ($row['status'] === 'ditolak'): ?>
+                                            <button class="btn btn-sm btn-outline-danger px-2 py-1 rounded-3 small"><i class="bi bi-arrow-counterclockwise"></i> Resubmit</button>
+                                        <?php else: ?>
+                                            <button class="btn btn-sm btn-light border text-muted px-2 py-1 rounded-3 small" disabled><i class="bi bi-hourglass text-secondary"></i> Menunggu</button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -252,15 +288,11 @@
                         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
                             <form id="form-pengajuan" class="row g-3" action="<?= site_url('mahasiswa/simpan') ?>" method="post" enctype="multipart/form-data">
                                 
-                                <!-- UPDATE 1: Posisikan File Input tersembunyi di dalam form agar terbaca sistem -->
                                 <input type="file" id="input-file-pdf" name="file_surat" accept="application/pdf" class="d-none" onchange="handleFilePreview(this)">
-                                
-                                <!-- UPDATE 2: Hidden input untuk menampung gabungan info dosen + catatan tambahan -->
                                 <input type="hidden" id="hidden-keterangan" name="keterangan">
 
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Jenis Surat</label>
-                                    <!-- UPDATE 3: Tambahkan atribut name="jenis_surat" agar ditangkap Controller -->
                                     <select id="select-jenis-surat" name="jenis_surat" class="form-select rounded-3" onchange="clearFieldError(this, 'jenis-error-msg')">
                                          <option value="">Pilih Jenis Surat</option>
                                         <?php foreach ($jenis_surat as $js): ?>
@@ -279,7 +311,6 @@
 
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Dosen Penandatangan / Penanggung Jawab</label>
-                                    <!-- Tanpa atribut name agar tidak bentrok dengan logika penggabungan keterangan -->
                                     <select id="select-dosen" class="form-select rounded-3" onchange="clearFieldError(this, 'dosen-error-msg')">
                                         <option value="">Pilih Dosen</option>
                                         <?php foreach ($dosen as $dsn): ?>
@@ -293,7 +324,6 @@
 
                                 <div class="col-12">
                                     <label class="form-label small fw-bold text-dark-smooth">Isi Ringkas / Keterangan Tambahan</label>
-                                    <!-- Diberikan ID unik untuk diproses JS -->
                                     <textarea id="textarea-catatan" class="form-control rounded-3" rows="4" placeholder="Ketik deskripsi atau keterangan tambahan surat di sini..."></textarea>
                                 </div>
 
@@ -305,39 +335,67 @@
                         </div>
                     </div>
 
-                    <!-- KOTAK PREVIEW -->
                     <div class="col-12 col-xl-4">
                         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white sticky-top" style="top: 20px;">
                             <h6 class="fw-bold text-dark-smooth mb-3">Pratinjau Dokumen</h6>
-
-                            <div id="preview-dokumen"
-                                 class="border rounded-3 p-4 bg-light shadow-inner text-center text-muted"
-                                 style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;"
-                                 onclick="document.getElementById('input-file-pdf').click()">
+                            <div id="preview-dokumen" class="border rounded-3 p-4 bg-light shadow-inner text-center text-muted" style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;" onclick="document.getElementById('input-file-pdf').click()">
                                 <div>
                                     <i class="bi bi-cloud-arrow-up fs-1 text-secondary mb-2"></i>
                                     <p class="small fw-bold text-dark-smooth mb-1">Klik untuk unggah file PDF</p>
                                     <p class="extra-small mb-0">Draft berkas otomatis terbentuk setelah form diisi.</p>
                                 </div>
                             </div>
-
                             <div id="pdf-error-msg" class="text-danger small mt-2 d-none">
-                                <i class="bi bi-exclamation-circle-fill me-1"></i> Anda belum memasukkan file PDF. Silakan unggah file terlebih dahulu sebelum mengirim ajuan.
+                                <i class="bi bi-exclamation-circle-fill me-1"></i> Anda belum memasukkan file PDF. Silakan unggah file terlebih dahulu.
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 4 & 5 OPSI LAIN -->
+            <!-- TAB 4 & 5 OPTIONS -->
+            <!-- TAB 4: RIWAYAT AJUAN -->
             <div id="content-riwayat-ajuan" class="tab-content d-none">
-                <h4 class="fw-bold text-dark-smooth mb-3">Riwayat Ajuan</h4>
-                <div class="alert alert-info rounded-3">Halaman riwayat ajuan surat Anda.</div>
-            </div>
+                <div class="mb-4">
+                    <h4 class="fw-bold text-dark-smooth">Riwayat Ajuan</h4>
+                    <p class="text-muted small">Catatan historis ringkas mengenai surat yang pernah Anda ajukan.</p>
+                </div>
 
-            <div id="content-daftar-dosen" class="tab-content d-none">
-                <h4 class="fw-bold text-dark-smooth mb-3">Daftar Dosen</h4>
-                <div class="alert alert-info rounded-3">Informasi kontak dan jadwal verifikasi dosen penanggung jawab.</div>
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-hover custom-table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50px;">No.</th>
+                                    <th>Nama / Perihal Surat</th>
+                                    <th>Jenis Surat</th>
+                                    <th>Tanggal Pengajuan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($riwayat_surat)): ?>
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">Belum ada catatan riwayat ajuan.</td>
+                                </tr>
+                                <?php else: ?>
+                                <?php $no = 1; foreach ($riwayat_surat as $row): ?>
+                                <tr>
+                                    <td><span class="small text-muted"><?= $no++; ?></span></td>
+                                    <td><span class="fw-bold text-dark-smooth"><?= esc($row['tujuan_surat']) ?></span></td>
+                                    <td><span class="small text-muted"><?= esc($row['nama_jenis']) ?></span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2 small text-muted">
+                                            <i class="bi bi-calendar3"></i> 
+                                            <?= date('d M Y', strtotime($row['tanggal_pengajuan'])) ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
         </main>
@@ -345,6 +403,7 @@
 </div>
 
 <script>
+    // UPDATE: Fungsi switchTab disederhanakan dan dioptimalkan agar langsung membaca ID container HTML
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => { el.classList.add('d-none'); });
         document.querySelectorAll('.nav-btn').forEach(el => {
@@ -352,13 +411,10 @@
             el.classList.add('text-white-50');
         });
 
-        if (tabId === 'surat-masuk' || tabId === 'surat-keluar') {
-            const suratContent = document.getElementById('content-surat-list');
-            if (suratContent) suratContent.classList.remove('d-none');
-            document.getElementById('page-title').innerText = tabId === 'surat-masuk' ? 'Surat Masuk' : 'Surat Keluar';
-        } else {
-            const selectedContent = document.getElementById(`content-${tabId}`);
-            if (selectedContent) selectedContent.classList.remove('d-none');
+        // Tampilkan element kontainer tujuan sesuai ID-nya
+        const selectedContent = document.getElementById(`content-${tabId}`);
+        if (selectedContent) {
+            selectedContent.classList.remove('d-none');
         }
 
         const activeBtn = document.getElementById(`btn-${tabId}`);
@@ -428,14 +484,15 @@
 
         if (!isValid) return false;
 
-        // UPDATE 4: Gabungkan data Dosen dan Catatan ke hidden input 'keterangan' sebelum submit
         const namaDosen = dosenSelect.options[dosenSelect.selectedIndex].text;
         const catatan = document.getElementById('textarea-catatan').value;
         document.getElementById('hidden-keterangan').value = "Dosen TTD: " + namaDosen + " | Catatan: " + (catatan ? catatan : '-');
 
-        // Submit form secara langsung ke backend
         document.getElementById('form-pengajuan').submit();
     }
+
+    // Default view saat pertama kali load halaman
+    switchTab('dashboard-utama');
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
